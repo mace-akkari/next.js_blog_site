@@ -9,7 +9,7 @@ interface Props {
 }
 
 const Home = ({ posts }: Props) => {
-  console.log(posts);
+  //console.log(posts);
   return (
     <div className="mx-w-7xl mx-auto">
       <Head>

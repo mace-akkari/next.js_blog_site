@@ -8,6 +8,7 @@ interface Props {
 }
 
 function Post({ post }: Props) {
+  console.log("post", post);
   return (
     <main>
       <Header />
@@ -58,11 +59,11 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     body
   }`;
 
-  const post = await sanityClient.fetch(query, {
-    slug: params?.slug,
-  });
+  const posts = await sanityClient.fetch(query, { slug: params?.slug });
 
-  if (!post) {
+  console.log("posts: ", posts);
+
+  if (!posts) {
     return {
       notFound: true,
     };
@@ -70,7 +71,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   return {
     props: {
-      post,
+      posts,
     },
     revalidate: 3600,
   };
