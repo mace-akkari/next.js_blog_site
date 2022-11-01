@@ -7,17 +7,6 @@ interface Props {
   post: Post;
 }
 
-function Post({ post }: Props) {
-  console.log("post", post);
-  return (
-    <main>
-      <Header />
-    </main>
-  );
-}
-
-export default Post;
-
 export const getStaticPaths = async () => {
   const query = `*[_type == "post"]{
     _id,
@@ -59,11 +48,9 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     body
   }`;
 
-  const posts = await sanityClient.fetch(query, { slug: params?.slug });
+  const post = await sanityClient.fetch(query, { slug: params?.slug });
 
-  console.log("posts: ", posts);
-
-  if (!posts) {
+  if (!post) {
     return {
       notFound: true,
     };
@@ -71,8 +58,42 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   return {
     props: {
-      posts,
+      post,
     },
     revalidate: 3600,
   };
 };
+
+function Post({ post }: Props) {
+  console.log("post", post);
+  return (
+    <main>
+      <Header />
+      <img
+        className="w-full h-40 object-cover"
+        src={urlFor(post.mainImage).url()!}
+        alt="main image"
+      />
+
+      <article className="max-w-3xl mx-auto p-5">
+        <h1 className=" text-3xl mt-10 mb-3">{post.title}</h1>
+        <h2 className="text-xl font-light text-gray-500 mb-2">
+          {post.description}
+        </h2>
+
+        <div>
+          <img
+            className="h-10 w-10 rounded-full"
+            src={urlFor(post.author.image).url()!}
+          />
+          <p className="font-extralight test-sm">
+            Blog post by {post.author.name} - Published on{" "}
+            {new Date(post._createdAt).toLocaleString()}
+          </p>
+        </div>
+      </article>
+    </main>
+  );
+}
+
+export default Post;
